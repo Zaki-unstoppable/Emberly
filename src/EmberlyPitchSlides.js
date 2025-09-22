@@ -1,6 +1,7 @@
 // src/EmberlyPitchSlides.js
 import React, { useState } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // 🔥 Flame Divider Component
 function FlameDivider() {
@@ -22,8 +23,12 @@ export default function EmberlyPitchSlides() {
   const DEFAULT_PLACEHOLDER =
     "https://via.placeholder.com/600x300?text=Emberly+Slide";
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(Array(slides.length).fill(""));
   const [erroredImages, setErroredImages] = useState([]);
+
+  // Slideshow state
+  const [slideshowMode, setSlideshowMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   // === SLIDES CONTENT ===
   const slides = [
@@ -201,6 +206,7 @@ export default function EmberlyPitchSlides() {
     },
   };
 
+
   // Handle broken images
   const handleImageError = (index, e) => {
     const updated = [...erroredImages];
@@ -208,36 +214,112 @@ export default function EmberlyPitchSlides() {
     setErroredImages(updated);
   };
 
+  // Handle image upload
+  const handleImageUpload = (index, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const updated = [...images];
+        updated[index] = reader.result;
+        setImages(updated);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Slideshow navigation
+  const goToPrev = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
+  const goToNext = () => setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
+
   return (
     <>
       <SpeedInsights />
-      <div style={styles.container}>
-        {slides.map((slide, idx) => (
-          <section key={idx} style={styles.card}>
+      <div style={{...styles.container, minHeight: '100vh'}}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
+          <button
+            style={{ ...styles.buttonPrimary, padding: '8px 18px', fontSize: 16 }}
+            onClick={() => setSlideshowMode((m) => !m)}
+          >
+            {slideshowMode ? 'Exit Slideshow' : 'View as Slideshow'}
+          </button>
+        </div>
+        {slideshowMode ? (
+          <section style={styles.card}>
             <FlameDivider />
-
-            {images[idx] ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={styles.imageWrap}>
                 <img
-                  src={erroredImages[idx] ? DEFAULT_PLACEHOLDER : images[idx]}
+                  src={erroredImages[currentSlide] ? DEFAULT_PLACEHOLDER : images[currentSlide] || DEFAULT_PLACEHOLDER}
+                  alt={slides[currentSlide].title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => handleImageError(currentSlide, e)}
+                />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                style={{ margin: '12px 0' }}
+                onChange={(e) => handleImageUpload(currentSlide, e)}
+              />
+              <div style={styles.content}>
+                <h2 style={styles.title}>{slides[currentSlide].title}</h2>
+                <ul style={styles.list}>
+                  {slides[currentSlide].bullets.map((b, i) => (
+                    <li key={i}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+              <div style={{ display: 'flex', gap: 16, marginTop: 24 }}>
+                <button
+                  style={{ ...styles.buttonPrimary, opacity: currentSlide === 0 ? 0.5 : 1 }}
+                  onClick={goToPrev}
+                  disabled={currentSlide === 0}
+                >
+                  ◀ Prev
+                </button>
+                <span style={{ fontWeight: 600, fontSize: 16 }}>
+                  Slide {currentSlide + 1} / {slides.length}
+                </span>
+                <button
+                  style={{ ...styles.buttonPrimary, opacity: currentSlide === slides.length - 1 ? 0.5 : 1 }}
+                  onClick={goToNext}
+                  disabled={currentSlide === slides.length - 1}
+                >
+                  Next ▶
+                </button>
+              </div>
+            </div>
+          </section>
+        ) : (
+          slides.map((slide, idx) => (
+            <section key={idx} style={styles.card}>
+              <FlameDivider />
+              <div style={styles.imageWrap}>
+                <img
+                  src={erroredImages[idx] ? DEFAULT_PLACEHOLDER : images[idx] || DEFAULT_PLACEHOLDER}
                   alt={slide.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => handleImageError(idx, e)}
                 />
               </div>
-            ) : null}
-
-            <div style={styles.content}>
-              <h2 style={styles.title}>{slide.title}</h2>
-              <ul style={styles.list}>
-                {slide.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        ))}
-
+              <input
+                type="file"
+                accept="image/*"
+                style={{ margin: '12px 0' }}
+                onChange={(e) => handleImageUpload(idx, e)}
+              />
+              <div style={styles.content}>
+                <h2 style={styles.title}>{slide.title}</h2>
+                <ul style={styles.list}>
+                  {slide.bullets.map((b, i) => (
+                    <li key={i}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ))
+        )}
         <div style={styles.ctaWrap}>
           <a
             href="https://emberly-smart-cook.lovable.app/"
