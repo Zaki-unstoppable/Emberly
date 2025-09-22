@@ -1,7 +1,5 @@
 // src/EmberlyPitchSlides.js
 import React, { useState } from "react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // 🔥 Flame Divider Component
 function FlameDivider() {
@@ -20,16 +18,6 @@ function FlameDivider() {
 
 // 🔥 Main Pitch Component
 export default function EmberlyPitchSlides() {
-  const DEFAULT_PLACEHOLDER =
-    "https://via.placeholder.com/600x300?text=Emberly+Slide";
-
-  const [images, setImages] = useState(Array(slides.length).fill(""));
-  const [erroredImages, setErroredImages] = useState([]);
-
-  // Slideshow state
-  const [slideshowMode, setSlideshowMode] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
   // === SLIDES CONTENT ===
   const slides = [
     {
@@ -143,6 +131,16 @@ export default function EmberlyPitchSlides() {
     },
   ];
 
+  const DEFAULT_PLACEHOLDER =
+    "https://via.placeholder.com/600x300?text=Emberly+Slide";
+
+  const [images, setImages] = useState(Array(slides.length).fill(""));
+  const [erroredImages, setErroredImages] = useState([]);
+
+  // Slideshow state
+  const [slideshowMode, setSlideshowMode] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   // === STYLES ===
   const styles = {
     container: {
@@ -206,7 +204,6 @@ export default function EmberlyPitchSlides() {
     },
   };
 
-
   // Handle broken images
   const handleImageError = (index, e) => {
     const updated = [...erroredImages];
@@ -234,7 +231,6 @@ export default function EmberlyPitchSlides() {
 
   return (
     <>
-      <SpeedInsights />
       <div style={{...styles.container, minHeight: '100vh'}}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button
