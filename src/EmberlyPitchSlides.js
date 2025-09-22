@@ -1,5 +1,6 @@
 // src/EmberlyPitchSlides.js
 import React, { useState } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // 🔥 Flame Divider Component
 function FlameDivider() {
@@ -208,43 +209,46 @@ export default function EmberlyPitchSlides() {
   };
 
   return (
-    <div style={styles.container}>
-      {slides.map((slide, idx) => (
-        <section key={idx} style={styles.card}>
-          <FlameDivider />
+    <>
+      <SpeedInsights />
+      <div style={styles.container}>
+        {slides.map((slide, idx) => (
+          <section key={idx} style={styles.card}>
+            <FlameDivider />
 
-          {images[idx] ? (
-            <div style={styles.imageWrap}>
-              <img
-                src={erroredImages[idx] ? DEFAULT_PLACEHOLDER : images[idx]}
-                alt={slide.title}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                onError={(e) => handleImageError(idx, e)}
-              />
+            {images[idx] ? (
+              <div style={styles.imageWrap}>
+                <img
+                  src={erroredImages[idx] ? DEFAULT_PLACEHOLDER : images[idx]}
+                  alt={slide.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={(e) => handleImageError(idx, e)}
+                />
+              </div>
+            ) : null}
+
+            <div style={styles.content}>
+              <h2 style={styles.title}>{slide.title}</h2>
+              <ul style={styles.list}>
+                {slide.bullets.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
             </div>
-          ) : null}
+          </section>
+        ))}
 
-          <div style={styles.content}>
-            <h2 style={styles.title}>{slide.title}</h2>
-            <ul style={styles.list}>
-              {slide.bullets.map((b, i) => (
-                <li key={i}>{b}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ))}
-
-      <div style={styles.ctaWrap}>
-        <a
-          href="https://emberly-smart-cook.lovable.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={styles.buttonPrimary}
-        >
-          🔥 Join Us & Turn Up The Heat
-        </a>
+        <div style={styles.ctaWrap}>
+          <a
+            href="https://emberly-smart-cook.lovable.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.buttonPrimary}
+          >
+            🔥 Join Us & Turn Up The Heat
+          </a>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
